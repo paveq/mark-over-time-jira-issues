@@ -17,6 +17,9 @@
 
     // Init script
     $(document).ready(function ($) {
+        var tryCount = 0,
+            maxTries = 10;
+
         // We need to wait for all the issues to load into the DOM. I think they're loaded with AJAX or something...
         setTimeout(function pollForIssuesLoaded() {
             var $issues = $('.js-issue');
@@ -25,8 +28,9 @@
                 addToggleButton();
                 markOverTimeIssues($issues);
             }
-            else {
+            else if(tryCount < maxTries) {
                 console.log('Waiting for the board to be fully loaded into the DOM...');
+                tryCount++;
                 pollForIssuesLoaded();
             }
         }, 10);
