@@ -29,7 +29,7 @@
                 console.log('Waiting for the board to be fully loaded into the DOM...');
                 pollForIssuesLoaded();
             }
-        }, 30);
+        }, 10);
     });
 
     function markOverTimeIssues($issues) {
@@ -42,7 +42,11 @@
             timeSpent,
             fiftyPercentLimit,
             seventyFivePercentLimit,
-            hundredPercentLimit;
+            overTimeLimit;
+
+        if(!$issues.length) {
+            return $issues;
+        }
 
         // Go through all the issues on the board
         $issues.each(function () {
@@ -50,7 +54,7 @@
             $estimate = $($metadata[0]);
             $timeSpent = $($metadata[1]);
             $storyPointBadge = $(this).find('.aui-badge');
-            storyPointsInMinutes = parseInt($storyPointBadge.text()) * STORY_POINT_IN_MINUTES || 0; // Convert Story Points to minutes
+            storyPointsInMinutes = parseFloat($storyPointBadge.text()) * STORY_POINT_IN_MINUTES || 0; // Convert Story Points to minutes
 
             estimatedTime = getAsMinutesFromTimeString($estimate.text());
             timeSpent = getAsMinutesFromTimeString($timeSpent.text());
@@ -59,9 +63,9 @@
             // (on some issues we forget to set an estimate in hours as well as Story Points)
             fiftyPercentLimit = estimatedTime > storyPointsInMinutes ? estimatedTime * 0.5 : storyPointsInMinutes * 0.5;
             seventyFivePercentLimit = estimatedTime > storyPointsInMinutes ? estimatedTime * 0.75 : storyPointsInMinutes * 0.75;
-            hundredPercentLimit = estimatedTime > storyPointsInMinutes ? estimatedTime : storyPointsInMinutes;
+            overTimeLimit = estimatedTime > storyPointsInMinutes ? estimatedTime : storyPointsInMinutes;
 
-            if (timeSpent >= hundredPercentLimit) {
+            if (timeSpent > overTimeLimit) {
                 markIssue.call(this, COLOR_100_PERCENT_SPENT);
             }
             else if (timeSpent >= seventyFivePercentLimit) {
@@ -138,8 +142,8 @@
         }
 
         parts = timeString.toLowerCase().split(' ');
-        hours = parseInt(parts[0].replace('h', '')) || 0;
-        minutes = parts.length > 1 ? parseInt(parts[1].replace('m', '')) : 0;
+        hours = parseFloat(parts[0].replace('h', '')) || 0;
+        minutes = parts.length > 1 ? parseFloat(parts[1].replace('m', '')) : 0;
 
         return (hours * 60) + minutes;
     }
