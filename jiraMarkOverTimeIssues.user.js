@@ -2,13 +2,16 @@
 // @name                Jira Mark Over time issues
 // @namespace	        jira
 // @description	        Adds a red background color to the issues that are at risk of going over the estimated time
-// @require       http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js
-// @include		http://jira.*
-// @include		https://jira.*
+// @require             http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js
+// @include		        http://jira.*
+// @include		        https://jira.*
+// @grant               none
 // ==/UserScript==
 
+// Required in order to not throw an error in Firefox
+this.jQuery = jQuery.noConflict(true);
+
 // TODO: [FEATURE] Write comment to PO that the issue is going over time
-// TODO: Test in Greasemonkey
 (function ($) {
     // Constants
     var COLOR_50_PERCENT_SPENT = '#FFF189',
