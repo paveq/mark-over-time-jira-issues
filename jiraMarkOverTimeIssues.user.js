@@ -8,6 +8,7 @@
 // ==/UserScript==
 
 // TODO: [FEATURE] Write comment to PO that the issue is going over time
+// TODO: Test in Greasemonkey
 (function ($) {
     // Constants
     var COLOR_50_PERCENT_SPENT = '#FFF189',
@@ -55,13 +56,22 @@
         // Go through all the issues on the board
         $issues.each(function () {
             $metadata = $(this).find('.ghx-extra-field-content');
-            $estimate = $($metadata[0]);
-            $timeSpent = $($metadata[1]);
+
+            // Some projects don't use estimates in hours, in those cases we'll assume that $timeSpent is the only child
+            if($metadata.length > 1) {
+                $estimate = $($metadata[0]);
+                $timeSpent = $($metadata[1]);
+
+                estimatedTime = getAsMinutesFromTimeString($estimate.text());
+            }
+            else {
+                $timeSpent = $($metadata[0]);
+            }
+
+            timeSpent = getAsMinutesFromTimeString($timeSpent.text());
+
             $storyPointBadge = $(this).find('.aui-badge');
             storyPointsInMinutes = parseFloat($storyPointBadge.text()) * STORY_POINT_IN_MINUTES || 0; // Convert Story Points to minutes
-
-            estimatedTime = getAsMinutesFromTimeString($estimate.text());
-            timeSpent = getAsMinutesFromTimeString($timeSpent.text());
 
             // Use story points for comparison if estimated time set on the issue is too low
             // (on some issues we forget to set an estimate in hours as well as Story Points)
@@ -141,8 +151,9 @@
             hours,
             minutes;
 
-        if (!timeString instanceof String) {
-            return timeString;
+        if (!timeString || !timeString instanceof String) {
+            console.log('MARK ISSUES PLUGIN: Expected argument to be a String, got: ' + timeString);
+            return 0;
         }
 
         parts = timeString.toLowerCase().split(' ');
