@@ -29,7 +29,7 @@
                 markOverTimeIssues($issues);
             }
             else if(tryCount < maxTries) {
-                console.log('Waiting for the board to be fully loaded into the DOM...');
+                console.log('MARK ISSUES PLUGIN: Waiting for the board to be fully loaded into the DOM...');
                 tryCount++;
                 pollForIssuesLoaded();
             }
