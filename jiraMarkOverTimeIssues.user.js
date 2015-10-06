@@ -33,7 +33,7 @@
                 tryCount++;
                 pollForIssuesLoaded();
             }
-        }, 10);
+        }, 100);
     });
 
     function markOverTimeIssues($issues) {
