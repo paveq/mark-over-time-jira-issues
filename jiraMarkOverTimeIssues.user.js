@@ -3,6 +3,7 @@
 // @namespace	        jira
 // @description	        Adds a red background color to the issues that are at risk of going over the estimated time
 // @require             http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js
+// @require             https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js
 // @include		        http://jira.*
 // @include		        https://jira.*
 // @grant               none
@@ -11,13 +12,15 @@
 // Required in order to not throw an error in Firefox
 this.jQuery = jQuery.noConflict(true);
 
-// TODO: [FEATURE] Write comment to PO that the issue is going over time
 (function ($) {
     // Constants
     var COLOR_50_PERCENT_SPENT = '#FFF189',
         COLOR_75_PERCENT_SPENT = '#FFBD67',
         COLOR_100_PERCENT_SPENT = '#FF6464',
-        STORY_POINT_IN_MINUTES = 8 * 60;
+        COOKIE_NAME = 'storyPointInHours';
+
+    // Global privates
+    var _STORY_POINT_IN_HOURS = $.cookie(COOKIE_NAME) || 8;
 
     // Init script
     $(document).ready(function ($) {
@@ -29,8 +32,7 @@ this.jQuery = jQuery.noConflict(true);
             var $issues = $('.js-issue');
 
             if ($issues.length > 0) {
-                addToggleButton();
-                markOverTimeIssues($issues);
+                init($issues);
             }
             else if(tryCount < maxTries) {
                 console.log('MARK ISSUES PLUGIN: Waiting for the board to be fully loaded into the DOM...');
@@ -39,6 +41,12 @@ this.jQuery = jQuery.noConflict(true);
             }
         }, 100);
     });
+
+    function init($issues) {
+        addToggleButton();
+        addStoryPointHourField();
+        markOverTimeIssues($issues);
+    }
 
     function markOverTimeIssues($issues) {
         var $metadata,
@@ -74,7 +82,7 @@ this.jQuery = jQuery.noConflict(true);
             timeSpent = getAsMinutesFromTimeString($timeSpent.text());
 
             $storyPointBadge = $(this).find('.aui-badge');
-            storyPointsInMinutes = parseFloat($storyPointBadge.text()) * STORY_POINT_IN_MINUTES || 0; // Convert Story Points to minutes
+            storyPointsInMinutes = parseFloat($storyPointBadge.text()) * _STORY_POINT_IN_HOURS * 60 || 0; // Convert Story Points to minutes
 
             // Use story points for comparison if estimated time set on the issue is too low
             // (on some issues we forget to set an estimate in hours as well as Story Points)
@@ -90,6 +98,9 @@ this.jQuery = jQuery.noConflict(true);
             }
             else if (timeSpent >= fiftyPercentLimit) {
                 markIssue.call(this, COLOR_50_PERCENT_SPENT);
+            }
+            else {
+                unmarkIssue.call(this);
             }
         });
     }
@@ -145,6 +156,53 @@ this.jQuery = jQuery.noConflict(true);
         $(this).data('colorsVisible', +!colorsVisible); // Toggle visibility
     }
 
+    function addStoryPointHourField() {
+        var value = $.cookie(COOKIE_NAME) || 8,
+            InputStyles = [
+            'background: rgba(0, 0, 0, 0.15);',
+            'border-radius: 3px;',
+            'box-shadow: none;',
+            'color: rgba(255, 255, 255, 0.6);',
+            'height: 30px;',
+            '-moz-appearance: textfield;',
+            '-webkit-appearance: textfield;',
+            'border: none;',
+            'box-sizing: border-box;',
+            'color: #000;',
+            'width: 35px;',
+            'padding: 2px 10px;',
+            'margin: 0 5px;',
+            'vertical-align: baseline;'
+        ].join('');
+
+        var $field = $(
+            '<div style="display: inline-block; margin-right: 10px;">' +
+                '<span>1 story point = </span>' +
+                '<input type="text" id="story-point-hours" style="' + InputStyles + '" value="' + value + '" title="Amount of hours 1 story point should equal" />' +
+                '<span>hours</span>' +
+            '</div>'
+        );
+
+        var onChange = debounce(storyPointValueChanged, 200);
+        $(document).on('change', '#story-point-hours', onChange);
+
+        $('#ghx-modes-tools').prepend($field);
+    }
+
+    function storyPointValueChanged() {
+        var newValue = parseInt($(this).val()) || 0;
+
+        if(newValue !== _STORY_POINT_IN_HOURS) {
+            _STORY_POINT_IN_HOURS = newValue;
+            markOverTimeIssues($('.js-issue'));
+            updateStoryPointCookie(newValue);
+        }
+    }
+
+    function updateStoryPointCookie(value) {
+        $.cookie(COOKIE_NAME, value, {expires: 7, path: '/'});
+    }
+
     /**
      * Takes a string in the format of "00h 00m" and converts it to {Number} minutes
      * @param {String} timeString
@@ -165,4 +223,22 @@ this.jQuery = jQuery.noConflict(true);
 
         return (hours * 60) + minutes;
     }
+
+    // Shamelessly stolen from Underscore.js
+    function debounce(func, wait, immediate) {
+        var timeout;
+        return function() {
+            var context = this, args = arguments;
+            var later = function() {
+                timeout = null;
+                if (!immediate) func.apply(context, args);
+            };
+            var callNow = immediate && !timeout;
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+            if (callNow) func.apply(context, args);
+        };
+    }
+
+
 })(jQuery);
