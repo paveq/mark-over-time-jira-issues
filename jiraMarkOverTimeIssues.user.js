@@ -95,13 +95,13 @@ this.jQuery = jQuery.noConflict(true);
             seventyFivePercentLimit = estimatedTime * 0.75;
             overTimeLimit = estimatedTime;
 
-            if (timeSpent > overTimeLimit) {
+            if (timeSpent > overTimeLimit && estimatedTime !== 0) {
                 markIssue.call(this, COLOR_100_PERCENT_SPENT);
             }
-            else if (timeSpent >= seventyFivePercentLimit) {
+            else if (timeSpent >= seventyFivePercentLimit && estimatedTime !== 0) {
                 markIssue.call(this, COLOR_75_PERCENT_SPENT);
             }
-            else if (timeSpent >= fiftyPercentLimit) {
+            else if (timeSpent >= fiftyPercentLimit && estimatedTime !== 0) {
                 markIssue.call(this, COLOR_50_PERCENT_SPENT);
             }
             else {
