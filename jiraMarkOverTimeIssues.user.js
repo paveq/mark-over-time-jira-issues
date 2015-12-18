@@ -44,7 +44,7 @@ this.jQuery = jQuery.noConflict(true);
 
     function init($issues) {
         addToggleButton();
-        addStoryPointHourField();
+        //addStoryPointHourField();
         markOverTimeIssues($issues);
     }
 
@@ -81,14 +81,18 @@ this.jQuery = jQuery.noConflict(true);
 
             timeSpent = getAsMinutesFromTimeString($timeSpent.text());
 
-            $storyPointBadge = $(this).find('.aui-badge');
-            storyPointsInMinutes = parseFloat($storyPointBadge.text()) * _STORY_POINT_IN_HOURS * 60 || 0; // Convert Story Points to minutes
+            //$storyPointBadge = $(this).find('.aui-badge');
+            //storyPointsInMinutes = parseFloat($storyPointBadge.text()) * _STORY_POINT_IN_HOURS * 60 || 0; // Convert Story Points to minutes
 
             // Use story points for comparison if estimated time set on the issue is too low
             // (on some issues we forget to set an estimate in hours as well as Story Points)
-            fiftyPercentLimit = estimatedTime > storyPointsInMinutes ? estimatedTime * 0.5 : storyPointsInMinutes * 0.5;
-            seventyFivePercentLimit = estimatedTime > storyPointsInMinutes ? estimatedTime * 0.75 : storyPointsInMinutes * 0.75;
-            overTimeLimit = estimatedTime > storyPointsInMinutes ? estimatedTime : storyPointsInMinutes;
+            //fiftyPercentLimit = estimatedTime > storyPointsInMinutes ? estimatedTime * 0.5 : storyPointsInMinutes * 0.5;
+            //seventyFivePercentLimit = estimatedTime > storyPointsInMinutes ? estimatedTime * 0.75 : storyPointsInMinutes * 0.75;
+            //overTimeLimit = estimatedTime > storyPointsInMinutes ? estimatedTime : storyPointsInMinutes;
+            
+            fiftyPercentLimit = estimatedTime estimatedTime * 0.5;
+            seventyFivePercentLimit = estimatedTime * 0.75;
+            overTimeLimit = stimatedTime;
 
             if (timeSpent > overTimeLimit) {
                 markIssue.call(this, COLOR_100_PERCENT_SPENT);
