@@ -7,7 +7,7 @@
 // @include		        http://jira.*
 // @include		        https://jira.*
 // @grant               none
-// @version             0.1.1
+// @version             0.1.2
 // ==/UserScript==
 
 // Required in order to not throw an error in Firefox
@@ -26,7 +26,7 @@ this.jQuery = jQuery.noConflict(true);
     // Init script
     $(document).ready(function ($) {
         var tryCount = 0,
-            maxTries = 10;
+            maxTries = 100;
 
         // We need to wait for all the issues to load into the DOM. I think they're loaded with AJAX or something...
         setTimeout(function pollForIssuesLoaded() {
