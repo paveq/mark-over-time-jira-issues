@@ -7,6 +7,7 @@
 // @include		        http://jira.*
 // @include		        https://jira.*
 // @grant               none
+// @version             0.1.0
 // ==/UserScript==
 
 // Required in order to not throw an error in Firefox
