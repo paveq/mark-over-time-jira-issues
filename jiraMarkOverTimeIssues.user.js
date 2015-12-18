@@ -90,9 +90,9 @@ this.jQuery = jQuery.noConflict(true);
             //seventyFivePercentLimit = estimatedTime > storyPointsInMinutes ? estimatedTime * 0.75 : storyPointsInMinutes * 0.75;
             //overTimeLimit = estimatedTime > storyPointsInMinutes ? estimatedTime : storyPointsInMinutes;
             
-            fiftyPercentLimit = estimatedTime estimatedTime * 0.5;
+            fiftyPercentLimit = estimatedTime * 0.5;
             seventyFivePercentLimit = estimatedTime * 0.75;
-            overTimeLimit = stimatedTime;
+            overTimeLimit = estimatedTime;
 
             if (timeSpent > overTimeLimit) {
                 markIssue.call(this, COLOR_100_PERCENT_SPENT);
